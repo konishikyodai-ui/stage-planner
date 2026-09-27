@@ -3,6 +3,15 @@
 *.pdf
 *.jpg
 *.jpeg
+*.png
+*.gif
+*.webp
+*.heic
+*.bmp
+*.tif
+*.tiff
+# アプリのアイコンだけは公開する
+!icons/*.png
 /drawings/
 /図面/
 
