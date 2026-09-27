@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>舞台図エディタの使い方</title>
+<meta name="theme-color" content="#5b3f8f">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Shippori+Mincho+B1:wght@700&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  body.help { overflow: auto; height: auto; background: var(--ground); font-size: 15px; line-height: 1.8; }
+  .help-top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .help-top .in { max-width: 920px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .help-top .brand-mark { font-size: 20px; }
+  .help-top a.open { margin-left: auto; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-weight: 700; padding: 7px 16px; border-radius: 8px; }
+  main.doc { max-width: 920px; margin: 0 auto; padding: 24px 20px 80px; }
+  .doc h1 { font-family: var(--mincho); font-size: 28px; letter-spacing: .06em; margin: 8px 0 6px; text-wrap: balance; }
+  .doc .lead { color: var(--muted); margin: 0 0 22px; max-width: 42em; }
+  .doc h2 { font-size: 19px; margin: 44px 0 12px; padding-top: 12px; border-top: 1px solid var(--line); scroll-margin-top: 70px; }
+  .doc h3 { font-size: 15.5px; margin: 22px 0 6px; }
+  .doc p, .doc li { max-width: 44em; }
+  .doc code, .doc kbd { font-family: var(--mono); font-size: 13px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+  .toc { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px 18px; }
+  .toc a { color: var(--ink); text-decoration: none; font-size: 14px; }
+  .toc a:hover { color: var(--accent); }
+  .callout { background: var(--accent-weak); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 10px; padding: 12px 16px; margin: 14px 0; }
+  .callout.warn { background: color-mix(in srgb, var(--warn) 10%, var(--panel)); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+  .callout b:first-child { display: block; margin-bottom: 2px; }
+  ol.flow { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  ol.flow > li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; column-gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px 12px 12px; max-width: none; }
+  ol.flow > li::before { content: counter(s); width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; font-family: var(--mono); font-size: 14px; }
+  ol.flow > li > div > b { display: block; font-size: 15.5px; }
+  ol.flow ul { margin: 4px 0 0; padding-left: 1.2em; }
+  .tbl-wrap { overflow-x: auto; }
+  table.ops { border-collapse: collapse; width: 100%; min-width: 620px; background: var(--panel); border-radius: 10px; overflow: hidden; font-size: 14px; }
+  table.ops th, table.ops td { border-bottom: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
+  table.ops thead th { background: var(--panel-2); font-size: 12.5px; color: var(--muted); letter-spacing: .06em; }
+  table.ops td:first-child, table.ops th:first-child { width: 9.5em; font-weight: 700; }
+  table.ops td:last-child { white-space: nowrap; }
+  .folder { font-family: var(--mono); font-size: 13.5px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  dl.faq dt { font-weight: 700; margin-top: 16px; }
+  dl.faq dd { margin: 4px 0 0; color: var(--ink); max-width: 44em; }
+  @media (max-width: 600px) { .doc h1 { font-size: 23px; } main.doc { padding: 16px 16px 60px; } .help-top .in { padding: 8px 16px; } }
+</style>
+</head>
+<body class="help">
+<header class="help-top"><div class="in">
+  <span class="brand-mark">舞台図</span><span class="muted small">筑波大学吹奏楽団</span>
+  <a class="open" href="./">アプリを開く</a>
+</div></header>
+
+<main class="doc">
+  <h1>舞台図エディタの使い方</h1>
+  <p class="lead">ホールから受け取った平面図の上に、椅子・譜面台・山台・楽器を実寸（mm）で配置し、必要物の数を数え、PDFで配れる舞台図を作るためのツールです。インストールは不要で、ブラウザで開くだけで使えます。</p>
+
+  <nav class="toc" aria-label="目次">
+    <a href="#first">最初に知っておくこと</a>
+    <a href="#flow">舞台図を作る手順</a>
+    <a href="#ops">操作一覧（マウス・タッチ・キー）</a>
+    <a href="#rules">楽団での運用ルール</a>
+    <a href="#print">印刷するときの注意</a>
+    <a href="#offline">オフライン・ホーム画面に追加</a>
+    <a href="#faq">困ったとき</a>
+  </nav>
+
+  <h2 id="first">最初に知っておくこと</h2>
+  <div class="callout warn">
+    <b>作業内容は「そのブラウザの中」にしか自動保存されません</b>
+    別のパソコンやiPad、別のブラウザ、シークレットウィンドウでは見えません。ブラウザの閲覧データを消すと自動保存も消えます。
+    区切りのよいところで必ず<b>「ファイル保存」</b>を押し、書き出された <code>.stage.json</code> を楽団の共有ドライブに置いてください。
+  </div>
+  <ul>
+    <li><b>おすすめの環境：</b>パソコンの Chrome または Edge。iPad の Safari でも使えます（画面が小さいスマートフォンは閲覧・微調整向きです）。</li>
+    <li><b>単位：</b>位置も寸法もすべて mm です。画面を拡大・縮小しても配置物の実寸は変わりません。</li>
+    <li><b>座標：</b>X・Y は「原点」からの距離です。原点は舞台センターの舞台端などに置くと、ホールとの打ち合わせで数字が伝わりやすくなります。</li>
+  </ul>
+
+  <h2 id="flow">舞台図を作る手順</h2>
+  <ol class="flow">
+    <li><div><b>図面を読み込む</b>
+      上部の「図面読込」から PNG・JPEG・PDF を選びます。PDF はページの一覧が出るので、舞台平面図のページをクリックします。
+      右パネルの「レイヤー」で図面の濃さを調整できます。ロックを外すと図面をドラッグして位置を合わせられます（合わせたらロックに戻してください）。</div></li>
+    <li><div><b>縮尺を合わせる（必須）</b>
+      「縮尺合わせ」を押し、図面の中で<b>長さが分かっている区間</b>の両端を順に指定します（1点目が赤丸で表示されます）。
+      実寸を「1間」「半間」「3尺」などのボタンか mm で入力して登録すると、画面左下に「1px ＝ ○ mm」と表示されます。
+      <ul><li>できるだけ<b>長い区間</b>（舞台の間口など）を選ぶと誤差が小さくなります。</li><li>点を指定する前に拡大しておくと正確です。1間 ＝ 6尺 ≒ 1,818mm で計算しています。</li></ul></div></li>
+    <li><div><b>縮尺を確認する</b>
+      「縮尺確認」で同じ区間（緑の点線）をもう一度指定すると、入力した基準距離・測定値・誤差率が出ます。
+      「良好」（±0.5% 以内）なら次へ。「縮尺合わせをやり直してください」と出たら、区間を選び直します。</div></li>
+    <li><div><b>原点を決める（任意）</b>
+      「原点」を押して、舞台センターの舞台端などをクリックします。以後の座標はここが 0,0 になります。</div></li>
+    <li><div><b>指揮台を置く</b>
+      左の「シンボルライブラリ」から指揮台を選び、置きたい場所をクリック（タップ）します。
+      「椅子・譜面台を指揮台へ向ける」がオンだと、以後に置く椅子や譜面台が自動で指揮台を向きます。</div></li>
+    <li><div><b>山台をまとめて組む</b>
+      「山台一括」で並列数（列）と、各列の山台の種類・枚数・向き・段高を入力します。<b>1列目が最後列</b>です。
+      「段高を後列から自動設定」で 600・450・300・150mm のような段差をまとめて付けられます。
+      プレビューをドラッグで移動、上の丸で回転し、「配置する」で確定。山台はグループになり、「グループ解除」で1枚ずつ動かせます。</div></li>
+    <li><div><b>椅子と譜面台を並べる</b>
+      「円弧・吹奏楽配置」で指揮台を中心にした円弧配置を作ります。テンプレート（円弧3列、吹奏楽 標準・小編成）を選ぶか、1行＝1列で脚数や略称を書きます。
+      図面上の丸いハンドルで中心・向き・1列目までの距離・列間隔・広がりを調整できます。直線に並べたいときは「横一列」を使います。
+      <ul><li>テンプレートの略称の並びは例です。実際の並びに合わせて書き換えてください（例：<code>Fl,Fl,Ob,Ob,Cl,Cl</code>）。</li></ul></div></li>
+    <li><div><b>打楽器・コントラバスなどを置く</b>
+      ライブラリから選んで置きます。ティンパニは 23"・26"・29"・32" を別々に数えます。袖への通路や反響板、迫りは「エリア」や「寸法線」「テキスト」で図面に書き込めます。</div></li>
+    <li><div><b>略称を入れる・微調整する</b>
+      椅子を選ぶと右パネルに X・Y・角度・略称が出ます。略称はボタン（Fl、Cl、A.Sax など）でも入力できます。複数選んでまとめて設定もできます。
+      グループの中の1脚だけ動かすときは <kbd>Alt</kbd>＋クリック、またはグループ解除します。</div></li>
+    <li><div><b>必要物を数える</b>
+      右パネルの「必要物一覧」に、椅子・譜面台・山台（段高ごと）・楽器の数とパート別の人数が自動で出ます。「表示中」は画面に映っている分だけ、「すべて」は図面全体です。
+      「表をコピー」で表計算ソフトへ貼り付け、「CSVで保存」でファイルにできます。</div></li>
+    <li><div><b>3Dで確かめる</b>
+      「3D表示」で舞台全体を回して確認できます。2D画面で椅子を1脚選んでから「この席から見る」を押すと、その席からの見え方（座奏・立奏・任意の目の高さ）になります。山台の段高も反映されます。</div></li>
+    <li><div><b>保存と出力</b>
+      「ファイル保存」で <code>.stage.json</code> を書き出して共有ドライブへ。
+      完成したら「出力」で PDF または PNG に。用紙（A4・A3、縦・横）、縮尺（1:50・1:100・用紙に合わせる）、背景・ラベル・注釈・必要物一覧を含めるかを選べます。</div></li>
+  </ol>
+
+  <h2 id="ops">操作一覧</h2>
+  <div class="tbl-wrap">
+  <table class="ops">
+    <thead><tr><th>やりたいこと</th><th>マウス</th><th>タッチ（iPad など）</th><th>キーボード</th></tr></thead>
+    <tbody>
+      <tr><td>配置物を置く</td><td>ライブラリで選んでクリック</td><td>ライブラリで選んでタップ</td><td>—</td></tr>
+      <tr><td>配置を終える</td><td>画面下の「終了」</td><td>画面下の「終了」</td><td><kbd>Esc</kbd></td></tr>
+      <tr><td>選ぶ</td><td>クリック</td><td>タップ</td><td><kbd>Ctrl</kbd>+<kbd>A</kbd>（全部）</td></tr>
+      <tr><td>まとめて選ぶ</td><td>何もない所からドラッグ／<kbd>Shift</kbd>+クリックで追加</td><td>何もない所から1本指でなぞる</td><td>—</td></tr>
+      <tr><td>グループ内の1点だけ選ぶ</td><td><kbd>Alt</kbd>+クリック</td><td>「詳細」→「グループ解除」</td><td>—</td></tr>
+      <tr><td>動かす</td><td>ドラッグ</td><td>1本指でドラッグ</td><td>矢印キー 10mm（<kbd>Shift</kbd> で 100mm）</td></tr>
+      <tr><td>回す</td><td>選択枠の上の丸をドラッグ</td><td>丸をドラッグ／下のバーの「−15°」「+15°」</td><td><kbd>R</kbd>／<kbd>Shift</kbd>+<kbd>R</kbd>（15°ずつ）</td></tr>
+      <tr><td>複製・削除</td><td>右パネルのボタン</td><td>下のバーの「複製」「削除」</td><td><kbd>Ctrl</kbd>+<kbd>D</kbd>／<kbd>Delete</kbd></td></tr>
+      <tr><td>数値で調整</td><td colspan="2">右パネル（狭い画面では下のバーの「詳細」）で X・Y・角度・寸法を入力</td><td>—</td></tr>
+      <tr><td>表示を動かす</td><td>右ドラッグ／<kbd>Space</kbd>+ドラッグ</td><td>2本指でドラッグ</td><td>—</td></tr>
+      <tr><td>拡大・縮小</td><td>ホイール</td><td>2本指でピンチ</td><td><kbd>F</kbd> で全体表示</td></tr>
+      <tr><td>元に戻す・やり直し</td><td colspan="2">上部の矢印ボタン</td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>／<kbd>Ctrl</kbd>+<kbd>Y</kbd></td></tr>
+      <tr><td>グループ化・解除</td><td colspan="2">右パネルのボタン</td><td><kbd>Ctrl</kbd>+<kbd>G</kbd>／<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted">狭い画面では左上の「ライブラリ」、右上の「パネル」でそれぞれの一覧を開閉します。一括配置中は画面下の「配置する」「キャンセル」でも確定・中止できます。</p>
+
+  <h2 id="rules">楽団での運用ルール</h2>
+  <h3>ファイルの置き場所</h3>
+  <p>共有ドライブに公演ごとのフォルダを作り、編集用ファイルと配布用PDFを一緒に置きます。</p>
+  <div class="folder">舞台図/
+  2026_定期演奏会/
+    20261102_定期演奏会_第1部_v1.stage.json   ← 編集用（アプリの「開く」で読み込む）
+    20261102_定期演奏会_第1部_v2.stage.json
+    20261102_定期演奏会_第1部_v2_A3_1-100.pdf ← 配布・ホール提出用
+    ホール図面/                               ← 受け取った元の平面図</div>
+  <ul>
+    <li><b>ファイル名：</b><code>本番日_公演名_曲目や部_v番号</code>。直したら v番号を上げて別名で保存し、上書きはしません。</li>
+    <li><b>同時に編集しない：</b>同じ舞台図を2人が別々に直すと、あとから保存した方しか残りません。担当者を1人決め、直したい人はコメントで伝えます。</li>
+    <li><b>ホールの図面は外に出さない：</b>ホールから受け取った図面は楽団内の共有ドライブだけに置きます。アプリ本体のページに図面は含まれないので、アプリのURLを共有しても図面は公開されません。</li>
+    <li><b>担当交代のとき：</b>最新の <code>.stage.json</code> が共有ドライブにあることを確認して引き継ぎます。ブラウザの自動保存は引き継げません。</li>
+  </ul>
+
+  <h2 id="print">印刷するときの注意</h2>
+  <div class="callout">
+    <b>PDFは「実際のサイズ（100%）」で印刷してください</b>
+    「用紙に合わせる」「ページに合わせて縮小」で印刷すると、1:100 などの縮尺が狂います。
+    印刷後、図面右下のスケールバー（例：0〜5m）を定規で測ると縮尺が正しいか確かめられます。
+  </div>
+  <ul>
+    <li>出力時の縮尺で用紙に収まらない場合は、出力画面に警告が出ます。A3 にする、1:100 にする、「用紙に合わせる」にする、のどれかで収まります。</li>
+    <li>ホールへの提出や当日の掲示には A3・1:100、打ち合わせ用の細部確認には 1:50 が目安です。</li>
+  </ul>
+
+  <h2 id="offline">オフライン・ホーム画面に追加</h2>
+  <ul>
+    <li><b>一度インターネットにつながった状態で開けば、次からは電波がなくても起動します。</b>「オフラインでも使えるようになりました」と表示されれば準備完了です。ホールで使う予定の端末は、事前に一度開いておいてください。</li>
+    <li>PDF読込・3D表示に必要な部品はアプリに同梱しているので、オフラインでも使えます。文字の書体だけは、オフラインだと端末の標準フォントになります。</li>
+    <li><b>iPad：</b>Safari で開き、共有ボタン →「ホーム画面に追加」。アプリのように全画面で起動できます。</li>
+    <li><b>パソコン（Chrome・Edge）：</b>アドレスバー右端の「インストール」アイコンから追加できます。</li>
+    <li>アプリが更新されたときは、インターネットにつながった状態で開き直すと新しい版になります。</li>
+  </ul>
+
+  <h2 id="faq">困ったとき</h2>
+  <dl class="faq">
+    <dt>前回の作業が消えている</dt>
+    <dd>自動保存は端末・ブラウザごとです。別の端末やシークレットウィンドウで開いていないか確認してください。共有ドライブの <code>.stage.json</code> を「開く」で読み込めば続きから編集できます。</dd>
+    <dt>画面左下が「縮尺未設定」のまま</dt>
+    <dd>縮尺合わせが済んでいません。図面を読み込み直すと縮尺は解除されるので、もう一度合わせてください。</dd>
+    <dt>図面と配置物がずれた</dt>
+    <dd>図面のロックが外れていると、何もない所をドラッグしたときに図面が動きます。「元に戻す」で戻し、「レイヤー」でロックをオンにしてください。</dd>
+    <dt>椅子が1脚だけ動かせない（全部一緒に動く）</dt>
+    <dd>一括配置した椅子はグループになっています。<kbd>Alt</kbd>＋クリックで1脚だけ選ぶか、「グループ解除」してください。</dd>
+    <dt>PDFを読み込めない</dt>
+    <dd>パスワード付きのPDFは読めません。ホールに解除した版をもらうか、PDFを画像（PNG）に書き出してから読み込んでください。</dd>
+    <dt>3D表示が重い</dt>
+    <dd>「奏者アバター」「ラベル」をオフにすると軽くなります。</dd>
+    <dt>iPad で文字入力の欄が小さい・拡大されてしまう</dt>
+    <dd>右上の「パネル」で編集パネルを開き、入力が終わったら「パネル」でもう一度閉じると図面が広く見えます。</dd>
+  </dl>
+</main>
+</body>
+</html>

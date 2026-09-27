@@ -1,0 +1,14 @@
+# ホールの図面や作成した舞台図は公開リポジトリに入れない（楽団の共有ドライブで管理する）
+*.stage.json
+*.pdf
+*.jpg
+*.jpeg
+/drawings/
+/図面/
+
+# OS・エディタ
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
